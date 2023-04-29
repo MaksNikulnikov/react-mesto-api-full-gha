@@ -1,0 +1,6 @@
+.element__caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 28px 21px 24px 21px;
+}
