@@ -4,11 +4,10 @@ class Api {
     this._token = apiConfig.token;
     this._groupId = apiConfig.groupId;
     this._serverName = apiConfig.serverName;
-    this._mainRequest = `${this._serverName}/v1/${this._groupId}`;
     this._requests = {
-      toUserInfo: `${this._mainRequest}/users/me`,
-      toCards: `${this._mainRequest}/cards`,
-      toUserInfoAvatar: `${this._mainRequest}/users/me/avatar`,
+      toUserInfo: `${this._serverName}/users/me`,
+      toCards: `${this._serverName}/cards`,
+      toUserInfoAvatar: `${this._serverName}/users/me/avatar`,
     };
   }
 
