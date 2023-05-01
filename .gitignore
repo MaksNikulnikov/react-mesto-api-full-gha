@@ -14,3 +14,7 @@ backend/node_modules
 .DS_Store
 .idea
 .vscode
+
+.env
+
+build
