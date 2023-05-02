@@ -99,7 +99,7 @@ function App() {
       api
         .deleteCard(card._id)
         .then((response) => {
-          if (response.message === "Пост удалён") {
+          if (response._id === card._id) {
             setCards((state) => 
               state.filter((item) => (item._id !== card._id))
             );
@@ -185,7 +185,7 @@ function App() {
       checkToken(jwt)
         .then((data) => {
           setLoggedIn(true);
-          setUserEmail(data.data.email);
+          setUserEmail(data.email);
           navigate("/cards");
         })
         .catch((e) => {

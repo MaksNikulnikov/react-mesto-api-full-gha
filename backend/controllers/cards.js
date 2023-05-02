@@ -8,7 +8,7 @@ const ForbiddenError = require('../errors/ForbiddenError');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch(next);
 };
 
@@ -24,7 +24,7 @@ module.exports.deleteCard = (req, res, next) => {
       return Card.findByIdAndRemove(req.params.cardId)
         .then((card) => {
           if (card) {
-            res.send({ data: card });
+            res.send(card);
             return;
           }
           // eslint-disable-next-line consistent-return
@@ -47,7 +47,7 @@ module.exports.createCard = (req, res, next) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => card.populate('owner')
-      .then((newCard) => res.send({ data: newCard })))
+      .then((newCard) => res.send(newCard)))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
@@ -61,10 +61,10 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .populate('owner')
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (card) {
-        res.send({ data: card });
+        res.send(card);
         return;
       }
       next(new NotFoundError('Передан несуществующий _id карточки.'));
@@ -82,10 +82,10 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .populate('owner')
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (card) {
-        res.send({ data: card });
+        res.send(card);
         return;
       }
       next(new NotFoundError('Передан несуществующий _id карточки.'));

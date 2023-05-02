@@ -10,7 +10,7 @@ const ConflictError = require('../errors/ConflictError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch(next);
 };
 
@@ -23,7 +23,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(id)
     .then((user) => {
       if (user) {
-        res.send({ data: user });
+        res.send(user);
         return;
       }
       next((new NotFoundError('Пользователь не найден')));
@@ -44,13 +44,11 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => res.send({
-      data: {
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-        _id: user._id,
-      },
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      _id: user._id,
     }))
     .catch((err) => {
       if (err.code === 11000) {
@@ -73,7 +71,7 @@ module.exports.patchUser = (req, res, next) => {
       runValidators: true,
     },
   )
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
@@ -92,7 +90,7 @@ module.exports.patchAvatar = (req, res, next) => {
       runValidators: true,
     },
   )
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
@@ -122,7 +120,7 @@ module.exports.login = (req, res, next) => {
             'some-secret-key',
             { expiresIn: '7d' },
           );
-          res.send({ jwt: token });
+          res.send({ token });
         });
     })
     .catch(next);
