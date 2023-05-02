@@ -1,4 +1,4 @@
-const _baseUrl = "http://api.vmesto.nomoredomains.monster/";
+const _baseUrl = "https://api.vmesto.nomoredomains.monster/";
 
 const _handleResponce = function (res) {
   if (res.ok) {
