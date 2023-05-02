@@ -10,7 +10,7 @@ const validationConfig = {
 };
 
 const apiConfig = {
-  serverName: "http://localhost:3000",
+  serverName: "http://api.vmesto.nomoredomains.monster",
 };
 
 export { validationConfig, apiConfig };
