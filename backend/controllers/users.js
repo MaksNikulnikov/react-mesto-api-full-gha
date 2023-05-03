@@ -22,18 +22,15 @@ module.exports.getUser = (req, res, next) => {
   req.params.id
     ? id = req.params.id
     : id = req.user._id;
-  User.findById(id)
+  User.findById(id).orFail()
     .then((user) => {
-      if (user) {
-        res.send(user);
-        return;
-      }
-      next((new NotFoundError('Пользователь не найден')));
+      res.send(user);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при запросе пользователя.'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundError('Пользователь не найден.'));
       }
+      next(err);
     });
 };
 
@@ -59,12 +56,11 @@ module.exports.createUser = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       }
+      next(err);
     });
 };
 
-module.exports.patchUser = (req, res, next) => {
-  const { name, about } = req.body;
-  const data = { name, about };
+function refreshUserData(req, res, next, data) {
   User.findByIdAndUpdate(
     req.user._id,
     data,
@@ -78,26 +74,49 @@ module.exports.patchUser = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
       }
+      next(err);
     });
+}
+
+module.exports.patchUser = (req, res, next) => {
+  const { name, about } = req.body;
+  const data = { name, about };
+  refreshUserData(req, res, next, data);
+  // User.findByIdAndUpdate(
+  //   req.user._id,
+  //   data,
+  //   {
+  //     new: true,
+  //     runValidators: true,
+  //   },
+  // )
+  //   .then((user) => res.send(user))
+  //   .catch((err) => {
+  //     if (err instanceof mongoose.Error.ValidationError) {
+  //       next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
+  //     }
+  //     next(err);
+  //   });
 };
 
 module.exports.patchAvatar = (req, res, next) => {
   const { avatar } = req.body;
-
-  User.findByIdAndUpdate(
-    req.user._id,
-    { avatar },
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
-      }
-    });
+  refreshUserData(req, res, next, { avatar });
+  // User.findByIdAndUpdate(
+  //   req.user._id,
+  //   { avatar },
+  //   {
+  //     new: true,
+  //     runValidators: true,
+  //   },
+  // )
+  //   .then((user) => res.send(user))
+  //   .catch((err) => {
+  //     if (err instanceof mongoose.Error.ValidationError) {
+  //       next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
+  //     }
+  //     next(err);
+  //   });
 };
 
 module.exports.login = (req, res, next) => {
