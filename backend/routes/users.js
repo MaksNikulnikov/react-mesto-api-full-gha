@@ -6,12 +6,13 @@ const {
   patchUser,
   patchAvatar,
 } = require('../controllers/users');
+const { URL_REGEXP } = require('../utils');
 
 router.get('/', getUsers);
 router.get('/me', getUser);
 router.get('/:id', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required().length(24),
+    id: Joi.string().hex().required().length(24),
   }),
 }), getUser);
 router.patch('/me', celebrate({
@@ -22,7 +23,7 @@ router.patch('/me', celebrate({
 }), patchUser);
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/(https?:\/\/)(w{3}\.)?\w+#?/),
+    avatar: Joi.string().pattern(URL_REGEXP),
   }),
 }), patchAvatar);
 
