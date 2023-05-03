@@ -82,41 +82,11 @@ module.exports.patchUser = (req, res, next) => {
   const { name, about } = req.body;
   const data = { name, about };
   refreshUserData(req, res, next, data);
-  // User.findByIdAndUpdate(
-  //   req.user._id,
-  //   data,
-  //   {
-  //     new: true,
-  //     runValidators: true,
-  //   },
-  // )
-  //   .then((user) => res.send(user))
-  //   .catch((err) => {
-  //     if (err instanceof mongoose.Error.ValidationError) {
-  //       next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
-  //     }
-  //     next(err);
-  //   });
 };
 
 module.exports.patchAvatar = (req, res, next) => {
   const { avatar } = req.body;
   refreshUserData(req, res, next, { avatar });
-  // User.findByIdAndUpdate(
-  //   req.user._id,
-  //   { avatar },
-  //   {
-  //     new: true,
-  //     runValidators: true,
-  //   },
-  // )
-  //   .then((user) => res.send(user))
-  //   .catch((err) => {
-  //     if (err instanceof mongoose.Error.ValidationError) {
-  //       next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
-  //     }
-  //     next(err);
-  //   });
 };
 
 module.exports.login = (req, res, next) => {
