@@ -18,17 +18,16 @@ module.exports.deleteCard = (req, res, next) => {
       if (!(String(req.user._id) === searchedCard.owner.toString())) {
         return Promise.reject(new ForbiddenError('Вы не можете удалить эту карту'));
       }
-      res.send(searchedCard);
-      return searchedCard.deleteOne();
+      return searchedCard.deleteOne().then(() => { res.send(searchedCard); });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         next(new NotFoundError('Передан несуществующий _id карточки.'));
-      }
-      if (err instanceof mongoose.Error.ValidationError) {
+      } else if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Передан некорректный _id карточки.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -41,8 +40,9 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -60,11 +60,11 @@ function handleLike(req, res, next, param) {
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         next(new NotFoundError('Передан несуществующий _id карточки.'));
-      }
-      if (err instanceof mongoose.Error.CastError) {
+      } else if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Переданы некорректные данные при постановке лайка.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 }
 

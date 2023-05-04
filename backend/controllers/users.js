@@ -29,8 +29,11 @@ module.exports.getUser = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         next(new NotFoundError('Пользователь не найден.'));
+      } else if (err instanceof mongoose.Error.CastError) {
+        next(new NotFoundError('Переданы некорректные данные пользователя.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -52,11 +55,11 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже существует'));
-      }
-      if (err instanceof mongoose.Error.ValidationError) {
+      } else if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -73,8 +76,9 @@ function refreshUserData(req, res, next, data) {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные при обновлении пользователя.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 }
 

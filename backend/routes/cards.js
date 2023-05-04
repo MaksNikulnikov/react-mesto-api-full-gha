@@ -13,7 +13,7 @@ const { URL_REGEXP } = require('../utils');
 function checkCardId() {
   return celebrate({
     params: Joi.object().keys({
-      cardId: Joi.string().required().length(24),
+      cardId: Joi.string().hex().required().length(24),
     }),
   });
 }
